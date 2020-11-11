@@ -25,7 +25,12 @@ function processArgs(obj)
         if strcmpi(ext, '.prm')
             try
                 fprintf('Loading config file @ %s\n',configFile);
-                obj.hCfg = jrclust.Config(configFile);
+                if strcmp(obj.cmd,'manual')
+                    requireRaw=false;
+                else
+                    requireRaw=true;
+                end
+                obj.hCfg = jrclust.Config(configFile,requireRaw);
                 % save imported config file
                 if obj.hCfg.isV3Import
                     obj.hCfg.save();

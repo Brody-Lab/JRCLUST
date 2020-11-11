@@ -9,6 +9,7 @@ classdef Config < dynamicprops
         logFid;                 % file id of open log file
         paramSet;               % common and advanced parameter sets with default values and validation criteria
         tempParams;             % temporary parameters (probably a hack)
+        requireRawRecordings;   % flag for whether successful identification of a raw file is required (for just curation this isn't necessary)
     end
 
     %% DEPENDENT OBJECT-LEVEL PROPERTIES
@@ -54,10 +55,9 @@ classdef Config < dynamicprops
 
     %% LIFECYCLE
     methods
-        function obj = Config(filename)
+        function obj = Config(filename,requireRawRecordings)
             %CONFIG Construct an instance of this class
             skipValidation = 0;
-
             if nargin == 0
                 userParams = struct();
                 obj.configFile = '';
@@ -74,10 +74,16 @@ classdef Config < dynamicprops
                 userParams = jrclust.utils.mToStruct(filename_);
                 obj.configFile = filename_;
             end
+            if nargin==1
+                requireRawRecordings=true;
+            end
 
             obj.customParams = {};
             obj.isV3Import = 0;
             obj.isError = 0;
+            
+            validateattributes(requireRawRecordings,{'logical'},{'scalar'},'Config','requireRawRecordings',2);
+            obj.requireRawRecordings = requireRawRecordings;
 
             obj.logEntries = containers.Map();
 
@@ -264,10 +270,10 @@ classdef Config < dynamicprops
             if isprop(obj, 'rawRecordings')
                 switch class(obj.rawRecordings)
                     case 'cell'
-                        val = val | all(cellfun(@isempty, obj.rawRecordings));
+                        val = val | (obj.requireRawRecordings & all(cellfun(@isempty, obj.rawRecordings)));
 
                     case 'char'
-                        val = val | isempty(obj.rawRecordings);
+                        val = val | (obj.requireRawRecordings & isempty(obj.rawRecordings));
 
                     otherwise
                         val = 1;
@@ -319,7 +325,11 @@ classdef Config < dynamicprops
 
                 isFound = ~cellfun(@isempty, mr_);
                 if ~all(isFound)
-                    error('Invalid raw file location in param file.');
+                    if obj.requireRawRecordings
+                        error('Invalid raw file location in param file.');
+                    else
+                        warning('Invalid raw file location in param file.');                        
+                    end
                 end
             end
 
@@ -408,7 +418,11 @@ classdef Config < dynamicprops
             end
             sr_ = jrclust.utils.absPath(sr, basedir);
             if isempty(sr_)
-                error('Recording ''%s'' not found', sr);
+                if obj.requireRawRecordings
+                    error('Recording ''%s'' not found', sr);
+                else
+                    warning('Recording ''%s'' not found', sr);                    
+                end
             end
 
             % validation done, just set prop
