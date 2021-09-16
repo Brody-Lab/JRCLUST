@@ -30,11 +30,7 @@ function hFigSim = plotFigSim(hFigSim, hClust, hCfg, selected, showSubset)
                         'YTickLabel', xyLabels);
         
         if ~isfield(hFigSim.figData,'figView')
-            if isa(hClust, 'jrclust.sort.TemplateClustering')
-                hFigSim.figData.figView = 'template'; % start out showing template sim scores
-            else
-                hFigSim.figData.figView = 'waveform';
-            end
+            hFigSim.figData.figView = 'waveform';
         end
 
         hFigSim.axApply('default', @axis, [0 nClusters 0 nClusters] + .5);
@@ -48,6 +44,7 @@ function hFigSim = plotFigSim(hFigSim, hClust, hCfg, selected, showSubset)
             hFigSim.figApply(@set, 'Name', ['Template-based similarity score: ', hCfg.sessionName], 'NumberTitle', 'off', 'Color', 'w');
         else
             hFigSim.addPlot('hImSim', @imagesc, 'CData', hClust.waveformSim(showSubset, showSubset), hCfg.corrRange);
+            hFigSim.figApply(@set, 'Name', ['Waveform-based similarity score: ', hCfg.sessionName], 'NumberTitle', 'off', 'Color', 'w');            
         end
 
         % selected cluster pair cursors
