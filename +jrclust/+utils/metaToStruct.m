@@ -10,12 +10,18 @@ function S = metaToStruct(filename)
         assert(strcmpi(ext, '.meta'), '''%s'' is not a meta file', filename);
     end
 
-    fid = fopen(filename, 'r');
-    keysvals = textscan(fid, '%s%s', 'Delimiter', '=',  'ReturnOnError', 0);
-    fclose(fid);
+    %% below code replaces old parsing code that used textscan. This is robust to the lines inserted into spikeGLX meta files by catGT.
+    txt = readlines(filename);
+    equals_place = strfind(txt,'=');
+    count=0;
+    for i=1:length(txt)
+        if numel(equals_place{i})
+            count=count+1;
+            keys{count} = txt{i}(1:equals_place{i}(1)-1);
+            vals{count} = txt{i}(equals_place{i}(1)+1:end);
+        end
+    end
 
-    keys = keysvals{1};
-    vals = keysvals{2};
     S = struct();
 
     for i = 1:numel(keys)
