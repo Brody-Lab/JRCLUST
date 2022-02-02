@@ -11,7 +11,7 @@ function S = metaToStruct(filename)
     end
 
     %% below code replaces old parsing code that used textscan. This is robust to the lines inserted into spikeGLX meta files by catGT.
-    txt = readlines(filename);
+    txt = readLines(filename);
     equals_place = strfind(txt,'=');
     count=0;
     for i=1:length(txt)
