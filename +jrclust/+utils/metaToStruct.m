@@ -10,12 +10,13 @@ function S = metaToStruct(filename)
         assert(strcmpi(ext, '.meta'), '''%s'' is not a meta file', filename);
     end
 
+
     fid = fopen(filename, 'r');
     keysvals = textscan(fid, '%[^=] = %[^\r\n]',  'ReturnOnError', 0);
+    keys=keysvals{1};
+    vals=keysvals{2};
     fclose(fid);
 
-    keys = keysvals{1};
-    vals = keysvals{2};
     S = struct();
 
     for i = 1:numel(keys)

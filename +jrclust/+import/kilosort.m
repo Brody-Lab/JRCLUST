@@ -20,20 +20,21 @@ params = phyData.params;
 channelMap = phyData.channel_map + 1;
 channelPositions = phyData.channel_positions;
 
+cfgData.sampleRate = params.sample_rate;
+cfgData.nChans = params.n_channels_dat;
+cfgData.dataType = params.dtype;
+cfgData.headerOffset = params.offset;
+cfgData.siteMap = channelMap;
+cfgData.siteLoc = channelPositions;
+
 % check for existence of .prm file. if exists use it as a template.
-[a,b,~] = fileparts(params.dat_path);
-prm_path = fullfile(a,filesep,[b,'.prm']);
-if exist(prm_path,'file')
-    cfgData.template_file = prm_path;
+names = dir(loadPath);
+prm_candidate=contains({names.name},'.prm');
+if sum(prm_candidate)==1
+    prm_path = fullfile(loadPath,names(prm_candidate).name);
+    cfgData.template_file = prm_path;    
 else
-    cfgData.sampleRate = params.sample_rate;
-    cfgData.nChans = params.n_channels_dat;
-    cfgData.dataType = params.dtype;
-    cfgData.headerOffset = params.offset;
-    cfgData.siteMap = channelMap;
-    cfgData.siteLoc = channelPositions;
-    cfgData.shankMap = ones(size(channelMap), 'like', channelMap);
-    cfgData.rawRecordings = {params.dat_path};
+    warning('Could not find a .prm file in this directory to use as a template.');
 end
 hCfg = jrclust.Config(cfgData);
 siteMapIndex = find(ismember(hCfg.siteMap,channelMap)); % KS may have returned a partial channel map, i.e. ~all(ismember(hCfg.siteMap,channelMap)) 
@@ -69,10 +70,13 @@ end
 
 %%% try to detect the recording file
 % first check for a .meta file
-binfile = params.dat_path;
+binfile = hCfg.rawRecordings{1};
+if isempty(hCfg.rawRecordings{1})
+    binfile = params.dat_path; % take ap.bin file location from .prm file by default
+end
 metafile = jrclust.utils.absPath(jrclust.utils.subsExt(binfile, '.meta'));
 if isempty(metafile)
-    dlgAns = questdlg('Do you have a .meta file?', 'Import', 'No');
+    dlgAns = questdlg('Do you have a .meta file?', 'Import', 'Yes','No','Cancel','Yes');
 
     switch dlgAns
         case 'Yes' % select .meta file

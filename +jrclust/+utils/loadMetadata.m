@@ -38,7 +38,6 @@ function S = loadMetadata(metafile)
         S.sampleRate = S.imSampRate;
         S.rangeMax = S.imAiRangeMax;
         S.rangeMin = S.imAiRangeMin;
-        
         S.probeOpt = [];
         % Determine probe type: 3A (0), 3B (1), or NP2.0 (2)
         if isfield(S,'imProbeOpt')

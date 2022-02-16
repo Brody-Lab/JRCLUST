@@ -7,6 +7,16 @@ function curate(obj)
     if ~isfield(obj.res, 'spikeTimes') || isempty(obj.res.spikeTimes)
         error('no spikes to curate');
     end
+     
+    if isempty(obj.res.spikesRaw)
+        error('Could not load raw spiking data @ %s.',obj.hCfg.rawFile);
+    end
+    if isempty(obj.res.spikesFilt)
+        error('Could not load filtered spiking data @ %s.',obj.hCfg.filtFile);
+    end    
+    if isempty(obj.res.spikeFeatures)
+        error('Could not load spike features @ %s.',obj.hCfg.featuresFile);
+    end    
 
     if ~isfield(obj.res, 'hClust')
         dlgAns = questdlg('Could not find all required data. Sort?', 'Sorting required', 'No');
