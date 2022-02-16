@@ -1,4 +1,4 @@
-function argsort = orderClusters(obj, by)
+function argsort = orderClusters(obj, by, channel_idx)
     %ORDERCLUSTERS Arrange cluster ID numbers by some criterion
     if nargin < 2 || isempty(by) || (~strcmp(by, 'Y + X') && ~isprop(obj, by))
         by = 'clusterSites';
@@ -7,7 +7,11 @@ function argsort = orderClusters(obj, by)
     if strcmpi(by, 'Y + X') && ~isempty(obj.clusterCentroids)
         [~, argsort] = sort(sum(obj.clusterCentroids, 2), 'ascend');
     elseif isprop(obj, by)
-        [~, argsort] = sort(obj.(by), 'ascend');
+        if strcmp(by,'clusterSites')
+            [~, argsort] = sort(channel_idx(obj.(by)), 'ascend');            
+        else
+            [~, argsort] = sort(obj.(by), 'ascend');
+        end
     end
 
     if issorted(argsort)

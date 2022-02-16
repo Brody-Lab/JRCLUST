@@ -32,8 +32,10 @@ function addMenu(obj, hFig)
     uimenu(obj.hMenus('EditMenu'), 'Label', 'Reorder clusters by center site', 'Callback', @(hO, hE) obj.reorderClusters('clusterSites'), 'Separator', 'on');
     uimenu(obj.hMenus('EditMenu'), 'Label', 'Reorder clusters by centroid', 'Callback', @(hO, hE) obj.reorderClusters('Y + X'));
     uimenu(obj.hMenus('EditMenu'), 'Label', 'Reorder sites by channel number', 'Callback', @(h0, hE) obj.reorderSites(1:obj.hCfg.nSites),'Separator','on');    
-    uimenu(obj.hMenus('EditMenu'), 'Label', 'Reorder sites by location dimension 1 (X)', 'Callback', @(h0, hE) obj.reorderSites(obj.hCfg.siteLoc(:,1)));
-    uimenu(obj.hMenus('EditMenu'), 'Label', 'Reorder sites by location dimension 2 (Y)', 'Callback', @(h0, hE) obj.reorderSites(obj.hCfg.siteLoc(:,2)));
+    uimenu(obj.hMenus('EditMenu'), 'Label', 'Reorder sites by location dimension 1 (X), separated by shank', 'Callback', ...
+        @(h0, hE) obj.reorderSites(obj.hCfg.siteLoc(:,1) + obj.hCfg.shankMap*2*max(obj.hCfg.siteLoc(:,1)))); % add a big y offset for each shank so shanks are separated        
+    uimenu(obj.hMenus('EditMenu'), 'Label', 'Reorder sites by location dimension 2 (Y), separated by shank', 'Callback', ...
+        @(h0, hE) obj.reorderSites(obj.hCfg.siteLoc(:,2) + obj.hCfg.shankMap*2*max(obj.hCfg.siteLoc(:,2)))); % add a big y offset for each shank so shanks are separated
 
     obj.hMenus('ViewMenu') = uimenu(hFig, 'Label', 'View');
     uimenu(obj.hMenus('ViewMenu'), 'Label', 'Show traces', 'Callback', @(hO, hE) obj.showTraces());

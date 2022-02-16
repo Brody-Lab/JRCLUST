@@ -4,14 +4,14 @@ function reorderClusters(obj, by)
         by = 'clusterSites';
     end
 
-    argsort = obj.hClust.orderClusters(by);
+    argsort = obj.hClust.orderClusters(by,obj.channel_idx);
 
     if issorted(argsort)
         jrclust.utils.qMsgBox('Clusters already in order');
         return;
     else
         nChanged = sum(argsort(:) ~= (1:obj.hClust.nClusters)');
-        jrclust.utils.qMsgBox(sprintf('%d clusters changed', nChanged));
+        %jrclust.utils.qMsgBox(sprintf('%d clusters changed', nChanged)); % this message provides little useful information
         obj.showSubset = find(ismember(argsort, obj.showSubset));
     end
 
