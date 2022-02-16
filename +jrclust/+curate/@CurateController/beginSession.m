@@ -9,8 +9,8 @@ function beginSession(obj)
     obj.maxAmp = obj.hCfg.maxAmp;
    
     % preferred order for Brody Lab sorting
-    obj.reorderSites(obj.hCfg.siteLoc(:,2))    ;
-    obj.reorderClusters('Y + X')    
+    obj.reorderSites(obj.hCfg.siteLoc(:,2) + obj.hCfg.shankMap*2*max(obj.hCfg.siteLoc(:,2)))    ;
+    obj.reorderClusters('clusterSites');    
     
     % select first cluster
     obj.selected = 1;

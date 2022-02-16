@@ -143,7 +143,7 @@ classdef CurateController < handle
                 if ~nChanged
                     jrclust.utils.qMsgBox('Clusters already in order');
                 else
-                    jrclust.utils.qMsgBox(sprintf('%d clusters changed', nChanged));
+                    %jrclust.utils.qMsgBox(sprintf('%d clusters changed',nChanged)); % this message provides little useful information
                 end
                 obj.spatial_idx = val;
                 [~,obj.channel_idx] = sort(obj.spatial_idx);                
