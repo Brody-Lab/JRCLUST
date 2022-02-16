@@ -38,8 +38,8 @@ function S = loadMetadata(metafile)
         S.sampleRate = S.imSampRate;
         S.rangeMax = S.imAiRangeMax;
         S.rangeMin = S.imAiRangeMin;
-        switch meta.imDatPrb_type
-            case {'21','24'}
+        switch S.imDatPrb_type
+            case {21,24}
                 S.adcBits = 14; % 10 bit adc but 16 bit saved
             otherwise
                 S.adcBits = 10; % 10 bit adc but 16 bit saved
@@ -61,11 +61,11 @@ function S = loadMetadata(metafile)
         S.gain = imroTblChan(4);
         S.gainLFP = imroTblChan(5);
         
-        switch meta.imDatPrb_type
-            case {'21','24'}
+        switch S.imDatPrb_type
+            case {21,24}
                 S.gain = zeros(size(S.gain))+80;
+                S.gainLFP = zeros(size(S.gainLFP));                
             otherwise
-                S.gainLFP = zeros(size(S.gainLFP));
         end        
 
         S.isImec = 1;
