@@ -38,35 +38,37 @@ function S = loadMetadata(metafile)
         S.sampleRate = S.imSampRate;
         S.rangeMax = S.imAiRangeMax;
         S.rangeMin = S.imAiRangeMin;
-        switch S.imDatPrb_type
-            case {21,24}
-                S.adcBits = 14; % 10 bit adc but 16 bit saved
-            otherwise
-                S.adcBits = 10; % 10 bit adc but 16 bit saved
-        end
-
-        % read data from ~imroTbl
-        imroTbl = strsplit(S.imroTbl(2:end-1), ')(');
-        imroTblHeader = cellfun(@str2double, strsplit(imroTbl{1}, ','));
-        if numel(imroTblHeader) == 3 % 3A with option
-            S.probeOpt = imroTblHeader(2);
-            %S.probe = sprintf('imec3_opt%d', S.probeOpt);
+        S.probeOpt = [];
+        % Determine probe type: 3A (0), 3B (1), or NP2.0 (2)
+        if isfield(S,'imProbeOpt')
+            probeType = '3A';
+            S.probeOpt = S.imProbeOpt;
+        elseif isfield(S,'imDatPrb_type')
+            if S.imDatPrb_type == 0
+                probeType = '3B'; 
+            elseif S.imDatPrb_type == 21 || S.imDatPrb_type == 24                
+                probeType = 'NP2';
+            else
+                probeType = 'unknown';
+            end
         else
-            S.probeOpt = [];
+            probeType = 'unknown';
         end
-
-        % parse first entry in imroTbl
-        imroTblChan = cellfun(@str2double, strsplit(imroTbl{2}, ' '));
-
-        S.gain = imroTblChan(4);
-        S.gainLFP = imroTblChan(5);
         
-        switch S.imDatPrb_type
-            case {21,24}
-                S.gain = zeros(size(S.gain))+80;
-                S.gainLFP = zeros(size(S.gainLFP));                
-            otherwise
-        end        
+        if strcmp(probeType,'3A') || strcmp(probeType, '3B')
+            % 3A or 3B data; both have 10 bit adc, gain specified in imro
+            S.adcBits = 10; % 10 bit adc but 16 bit saved
+            % read data from ~imroTbl
+            imroTbl = strsplit(S.imroTbl(2:end-1), ')(');
+            % parse first channel entry
+            imroTblChan = cellfun(@str2double, strsplit(imroTbl{2}, ' '));
+            S.gain = imroTblChan(4);
+            S.gainLFP = imroTblChan(5);
+        elseif strcmp(probeType,'NP2')
+            % NP 2.0 -- headstage has two docks          
+            S.adcBits = 14; % 14 bit adc but 16 bit saved
+            S.gain = 80; % constant gain
+        end
 
         S.isImec = 1;
     end

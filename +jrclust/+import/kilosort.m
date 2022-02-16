@@ -26,7 +26,6 @@ cfgData.dataType = params.dtype;
 cfgData.headerOffset = params.offset;
 cfgData.siteMap = channelMap;
 cfgData.siteLoc = channelPositions;
-cfgData.shankMap = ones(size(channelMap), 'like', channelMap); % this can change with a prm file
 
 % check for existence of .prm file. if exists use it as a template.
 names = dir(loadPath);
@@ -38,6 +37,7 @@ else
     warning('Could not find a .prm file in this directory to use as a template.');
 end
 hCfg = jrclust.Config(cfgData);
+siteMapIndex = find(ismember(hCfg.siteMap,channelMap)); % KS may have returned a partial channel map, i.e. ~all(ismember(hCfg.siteMap,channelMap)) 
 
 % load spike data
 amplitudes = phyData.amplitudes;
@@ -64,9 +64,8 @@ nClusters = numel(goodClusters);
 spikeSites = zeros(size(spikeClusters), 'like', spikeClusters);
 for iTemplate = 1:nTemplates
     template = squeeze(templates(iTemplate, :, :));
-    [~, tSite] = min(min(template));
-
-    spikeSites(spikeTemplates == iTemplate) = tSite;
+    [~, tSite] = max(max(abs(template)));
+    spikeSites(spikeTemplates == iTemplate) = siteMapIndex(tSite); %setting spikeSites as tSites directly would renumber channel map in case KS has returned a partial channel map 
 end
 
 %%% try to detect the recording file
