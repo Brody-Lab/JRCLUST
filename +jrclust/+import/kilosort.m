@@ -29,7 +29,7 @@ cfgData.siteLoc = channelPositions;
 
 % check for existence of .prm file. if exists use it as a template.
 names = dir(loadPath);
-prm_candidate=contains({names.name},'.prm');
+prm_candidate=contains({names.name},'.prm') & ~contains({names.name},'-full.prm');
 if sum(prm_candidate)==1
     prm_path = fullfile(loadPath,names(prm_candidate).name);
     cfgData.template_file = prm_path;    
