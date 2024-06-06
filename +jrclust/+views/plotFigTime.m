@@ -80,12 +80,14 @@ function hFigTime = plotFigTime(hFigTime, hClust, hCfg, selected, maxAmp, iSite,
     % Sometimes there are a lot of these and they make the other points hard to see in the histogram.
     histcountfun = @(features)histcounts(features,n_hist_bins,'BinLimits',binlimits,'Normalization','probability');
     updateplotfun = @(tag,N,edges)hFigTime.updatePlot(tag,[0 N 0],[edges edges(end)+eps]); % feeding stairs the output of histcounts in this way exactly reproduces the output of matlab histogram, rotated on its side
-    [N,edges] = histcountfun(bgFeatures);
-    updateplotfun('background_hist',N,edges);
-    [N,edges] = histcountfun(fgFeatures);
-    updateplotfun('foreground_hist',N,edges);
-    [N,edges] = histcountfun(fgFeatures2);    
-    updateplotfun('foreground_hist2',N,edges);
+    if ~any(isnan(binlimits))
+        [N,edges] = histcountfun(bgFeatures);
+        updateplotfun('background_hist',N,edges);
+        [N,edges] = histcountfun(fgFeatures);
+        updateplotfun('foreground_hist',N,edges);
+        [N,edges] = histcountfun(fgFeatures2);    
+        updateplotfun('foreground_hist2',N,edges);
+    end
 
 
 %     if isfield(S_fig, 'vhAx_track')
