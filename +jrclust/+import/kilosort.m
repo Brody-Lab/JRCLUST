@@ -112,11 +112,8 @@ if isempty(jrclust.utils.absPath(binfile))
 end
 
 % load metafile, set bitScaling
-if ~isempty(metafile)
-    SMeta_ = jrclust.utils.loadMetadata(metafile);
-    hCfg.bitScaling = SMeta_.bitScaling;
-else
-    hCfg.bitScaling = 1;
+if hCfg.bitScaling==1
+    error('write_prm_for_ks2jrc2 should have provided a .prm file with the correct bitScaling but that hasn''t happened.');
 end
 
 
